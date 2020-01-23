@@ -10,8 +10,8 @@ STORE_PKI="${5:-${STORE_PKI:-false}}"
 DNS_ADBLOCKING="${6:-${DNS_ADBLOCKING:-false}}"
 SSH_TUNNELING="${7:-${SSH_TUNNELING:-false}}"
 ENDPOINT="${8:-${ENDPOINT:-localhost}}"
-USERS="${9:-${USERS:-user1}}"
-REPO_SLUG="${10:-${REPO_SLUG:-trailofbits/algo}}"
+USERS="${9:-${USERS:-phone-dns,laptop-dns,phone-full,laptop-full}}"
+REPO_SLUG="${10:-${REPO_SLUG:-shapiro125/algo-debian}}"
 REPO_BRANCH="${11:-${REPO_BRANCH:-master}}"
 EXTRA_VARS="${12:-${EXTRA_VARS:-placeholder=null}}"
 ANSIBLE_EXTRA_ARGS="${13:-${ANSIBLE_EXTRA_ARGS}}"
@@ -22,14 +22,10 @@ installRequirements() {
   export DEBIAN_FRONTEND=noninteractive
   apt-get update
   apt-get install \
-    software-properties-common \
     git \
     build-essential \
     libssl-dev \
     libffi-dev \
-    python3-dev \
-    python3-pip \
-    python3-setuptools \
     python3-virtualenv \
     bind9-host \
     jq -y
@@ -59,7 +55,7 @@ publicIpFromMetadata() {
     ENDPOINT="$(curl -s http://169.254.169.254/metadata/v1/interfaces/public/0/ipv4/address)"
   elif test "$(curl -s http://169.254.169.254/latest/meta-data/services/domain)" = "amazonaws.com"; then
     ENDPOINT="$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)"
-  elif host -t A -W 10 metadata.google.internal 127.0.0.53 >/dev/null; then
+  elif host -t A -W 10 metadata.google.internal >/dev/null; then
     ENDPOINT="$(curl -H "Metadata-Flavor: Google" "http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/access-configs/0/external-ip")"
   elif test "$(curl -s -H Metadata:true 'http://169.254.169.254/metadata/instance/compute/publisher/?api-version=2017-04-02&format=text')" = "Canonical"; then
     ENDPOINT="$(curl -H Metadata:true 'http://169.254.169.254/metadata/instance/network/interface/0/ipv4/ipAddress/0/publicIpAddress?api-version=2017-04-02&format=text')"
@@ -102,10 +98,10 @@ deployAlgo() {
       tee /var/log/algo.log
 }
 
+installRequirements
+
 if test "$METHOD" = "cloud"; then
   publicIpFromMetadata
 fi
-
-installRequirements
 
 deployAlgo

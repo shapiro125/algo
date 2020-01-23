@@ -1,0 +1,24 @@
+---
+- name: Create the file to be used for swap
+  command: dd if=/dev/zero of=/swapfile bs=1024 count=1048576
+  when: ansible_swaptotal_mb < 1
+
+- name: Change swap file permissions
+  file:
+    path: /swapfile
+    owner: root
+    group: root
+    mode: '0600'
+
+- name: Format swap file
+  command: mkswap /swapfile
+  when: ansible_swaptotal_mb < 1
+
+- name: Turn on swap file
+  command: swapon /swapfile
+  when: ansible_swaptotal_mb < 1
+
+- name: Add swap to fstab
+  lineinfile:
+    dest: /etc/fstab
+    line: "/swapfile swap swap defaults 0 0"
