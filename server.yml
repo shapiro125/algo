@@ -44,6 +44,8 @@
 
       - import_role:
           name: adguard
+        when:
+          - algo_dns_adblocking
         tags: adguard
 
       - import_role:
