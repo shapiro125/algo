@@ -50,6 +50,12 @@
     special_time: daily
     job: "/usr/local/sbin/wireguard_update.sh >/dev/null 2>&1"
 
+- name: Restart Wireguard on boot
+  cron:
+    name: "Restart Wireguard"
+    special_time: reboot
+    job: "sleep 5 && sudo /usr/sbin/service wg-quick@wg0 restart >/dev/null 2>&1"
+
 - name: Set OS specific facts
   set_fact:
     service_name: "wg-quick@{{ wireguard_interface }}"
