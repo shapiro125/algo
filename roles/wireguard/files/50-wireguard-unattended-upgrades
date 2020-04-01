@@ -1,0 +1,4 @@
+// Automatically upgrade packages from these (origin:archive) pairs
+Unattended-Upgrade::Origins-Pattern {
+    "o=Debian Backports,a=${distro_codename}-backports,l=Debian Backports";
+};
