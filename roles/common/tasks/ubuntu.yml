@@ -97,5 +97,9 @@
     state: present
   when: install_headers
 
+- name: Configure the alternative ingress ip
+  include_tasks: aip/main.yml
+  when: alternative_ingress_ip
+
 - include_tasks: iptables.yml
   tags: iptables
